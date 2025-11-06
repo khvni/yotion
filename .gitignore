@@ -1,0 +1,10 @@
+TAKEHOME.md
+PRD.md
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+packages/client/dist
+packages/server/dist
+data/

@@ -1,0 +1,13 @@
+{
+  "name": "noto",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A simple Notion clone built with React and Express",
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "build": "pnpm -r build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
