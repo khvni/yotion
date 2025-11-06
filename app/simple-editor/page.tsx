@@ -19,48 +19,93 @@ export default function SimpleEditorPage() {
   const [focusedIndex, setFocusedIndex] = useState<number>(0);
 
   useEffect(() => {
-    // Load blocks from backend
     fetchBlocks();
   }, []);
 
   const fetchBlocks = async () => {
-    // TODO: Fetch from backend
-    // For now, initialize with one empty block
-    setBlocks([{
-      id: nanoid(),
-      type: "text",
-      content: "",
-      order: 0
-    }]);
+    try {
+      const response = await fetch("http://localhost:3001/api/blocks");
+      const data = await response.json();
+      setBlocks(data);
+    } catch (error) {
+      console.error("Failed to fetch blocks:", error);
+      // Fallback to empty block
+      setBlocks([{
+        id: nanoid(),
+        type: "text",
+        content: "",
+        order: 0
+      }]);
+    }
   };
 
-  const updateBlock = (index: number, updates: Partial<Block>) => {
+  const updateBlock = async (index: number, updates: Partial<Block>) => {
     setBlocks(prev => {
       const newBlocks = [...prev];
       newBlocks[index] = { ...newBlocks[index], ...updates };
+
+      // Save to backend
+      const block = newBlocks[index];
+      saveBlock(block);
+
       return newBlocks;
     });
   };
 
-  const addBlock = (index: number, type: BlockType = "text") => {
+  const saveBlock = async (block: Block) => {
+    try {
+      await fetch(`http://localhost:3001/api/blocks/${block.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: block.type, content: block.content }),
+      });
+    } catch (error) {
+      console.error("Failed to save block:", error);
+    }
+  };
+
+  const addBlock = async (index: number, type: BlockType = "text") => {
+    const newBlock: Block = {
+      id: nanoid(),
+      type,
+      content: "",
+      order: index + 1
+    };
+
     setBlocks(prev => {
       const newBlocks = [...prev];
-      const newBlock: Block = {
-        id: nanoid(),
-        type,
-        content: "",
-        order: index + 1
-      };
       newBlocks.splice(index + 1, 0, newBlock);
       return newBlocks;
     });
     setFocusedIndex(index + 1);
+
+    // Save to backend
+    try {
+      await fetch("http://localhost:3001/api/blocks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBlock),
+      });
+    } catch (error) {
+      console.error("Failed to create block:", error);
+    }
   };
 
-  const removeBlock = (index: number) => {
+  const removeBlock = async (index: number) => {
     if (blocks.length === 1) return;
+
+    const blockToRemove = blocks[index];
     setBlocks(prev => prev.filter((_, i) => i !== index));
     setFocusedIndex(Math.max(0, index - 1));
+
+    // Delete from backend
+    try {
+      await fetch(`http://localhost:3001/api/blocks/${blockToRemove.id}`, {
+        method: "DELETE",
+      });
+    } catch (error) {
+      console.error("Failed to delete block:", error);
+    }
   };
 
   return (
