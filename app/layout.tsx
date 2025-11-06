@@ -38,8 +38,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ConvexClientProvider>
-          <EdgeStoreProvider>
+        {/* <ConvexClientProvider> */}
+          {/* <EdgeStoreProvider> */}
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
@@ -48,11 +48,11 @@ export default function RootLayout({
               storageKey="zotion-theme-2"
             >
               <Toaster position="bottom-center" />
-              <ModalProvider />
+              {/* <ModalProvider /> */}
               {children}
             </ThemeProvider>
-          </EdgeStoreProvider>
-        </ConvexClientProvider>
+          {/* </EdgeStoreProvider> */}
+        {/* </ConvexClientProvider> */}
       </body>
     </html>
   );
