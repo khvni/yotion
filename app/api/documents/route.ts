@@ -6,7 +6,7 @@ import { eq, and } from 'drizzle-orm';
 // GET /api/documents - List all documents for a user
 export async function GET(request: NextRequest) {
   try {
-    const db = await getDb();
+    const db = getDb();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 // POST /api/documents - Create a new document
 export async function POST(request: NextRequest) {
   try {
-    const db = await getDb();
+    const db = getDb();
     const body = await request.json();
     const { title, userId, parentDocument } = body;
 

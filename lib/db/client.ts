@@ -1,34 +1,45 @@
-import { PGlite } from '@electric-sql/pglite';
-import { drizzle } from 'drizzle-orm/pglite';
+import Database from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from './schema';
+import path from 'path';
+import fs from 'fs';
 
-// Use an absolute path as a string for PGlite
-const dbPath = `${process.cwd()}/data/noto.db`;
+// Use a simple path for SQLite database file
+const dbPath = path.join(process.cwd(), 'data', 'notion.db');
 
-// Create a singleton PGlite client
-let client: PGlite | null = null;
+// Ensure data directory exists
+const dataDir = path.dirname(dbPath);
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+// Create a singleton SQLite client
+let client: Database.Database | null = null;
 let db: ReturnType<typeof drizzle> | null = null;
 
-export async function getDb() {
+export function getDb() {
   if (db) return db;
 
   if (!client) {
-    client = new PGlite(dbPath);
+    client = new Database(dbPath);
+
+    // Enable foreign keys
+    client.pragma('foreign_keys = ON');
 
     // Initialize database schema
-    await client.exec(`
+    client.exec(`
       CREATE TABLE IF NOT EXISTS documents (
-        id SERIAL PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         user_id TEXT NOT NULL,
         content TEXT,
         cover_image TEXT,
         icon TEXT,
-        is_archived BOOLEAN NOT NULL DEFAULT false,
-        is_published BOOLEAN NOT NULL DEFAULT false,
+        is_archived INTEGER NOT NULL DEFAULT 0,
+        is_published INTEGER NOT NULL DEFAULT 0,
         parent_document INTEGER REFERENCES documents(id) ON DELETE CASCADE,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
       );
 
       CREATE INDEX IF NOT EXISTS idx_documents_user_id ON documents(user_id);

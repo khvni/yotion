@@ -6,7 +6,7 @@ import { eq, and, desc } from 'drizzle-orm';
 // GET /api/documents/search - Get all non-archived documents for search
 export async function GET(request: NextRequest) {
   try {
-    const db = await getDb();
+    const db = getDb();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 

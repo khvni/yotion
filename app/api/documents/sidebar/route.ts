@@ -6,7 +6,7 @@ import { eq, and, isNull, desc } from 'drizzle-orm';
 // GET /api/documents/sidebar - Get documents for sidebar (by parent)
 export async function GET(request: NextRequest) {
   try {
-    const db = await getDb();
+    const db = getDb();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const parentDocumentId = searchParams.get('parentDocument');

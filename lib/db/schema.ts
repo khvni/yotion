@@ -1,18 +1,18 @@
-import { pgTable, text, boolean, timestamp, integer } from 'drizzle-orm/pg-core';
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 // Documents table - matches Convex schema
-export const documents = pgTable('documents', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+export const documents = sqliteTable('documents', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
   title: text('title').notNull(),
   userId: text('user_id').notNull(),
-  isArchived: boolean('is_archived').notNull().default(false),
+  isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
   parentDocument: integer('parent_document').references((): any => documents.id, { onDelete: 'cascade' }),
   content: text('content'),
   coverImage: text('cover_image'),
   icon: text('icon'),
-  isPublished: boolean('is_published').notNull().default(false),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  isPublished: integer('is_published', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
 // Type exports for use in API routes

@@ -5,7 +5,7 @@ import { eq, and } from 'drizzle-orm';
 
 // Helper function to recursively archive all children
 async function recursiveArchive(documentId: number, userId: string): Promise<void> {
-  const db = await getDb();
+  const db = getDb();
   // Find all children of this document
   const children = await db
     .select()
@@ -34,7 +34,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const db = await getDb();
+    const db = getDb();
     const id = parseInt(params.id);
     const body = await request.json();
     const { userId } = body;
