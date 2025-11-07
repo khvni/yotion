@@ -4,15 +4,6 @@ import * as schema from './schema';
 import path from 'path';
 import fs from 'fs';
 
-// Use a simple path for SQLite database file
-const dbPath = path.join(process.cwd(), 'data', 'notion.db');
-
-// Ensure data directory exists
-const dataDir = path.dirname(dbPath);
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
-
 // Create a singleton SQLite client
 let client: Database.Database | null = null;
 let db: ReturnType<typeof drizzle> | null = null;
@@ -21,6 +12,15 @@ export function getDb() {
   if (db) return db;
 
   if (!client) {
+    // Use a simple path for SQLite database file
+    const dbPath = path.join(process.cwd(), 'data', 'notion.db');
+
+    // Ensure data directory exists
+    const dataDir = path.dirname(dbPath);
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+
     client = new Database(dbPath);
 
     // Enable foreign keys
