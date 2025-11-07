@@ -37,3 +37,7 @@ next-env.d.ts
 
 # PGLite database files
 /data/notion.db/
+
+# Uploaded images (local storage)
+/public/uploads/*
+!/public/uploads/.gitkeep

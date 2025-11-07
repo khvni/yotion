@@ -34,7 +34,7 @@ export const Navbar = () => {
                 </Button>
               </SignInButton>
               <SignInButton mode="modal">
-                <Button size="sm">Get Zotion Free</Button>
+                <Button size="sm">Get Yotion Free</Button>
               </SignInButton>
             </>
           )}
@@ -42,7 +42,7 @@ export const Navbar = () => {
           {isAuthenticated && !isLoading && (
             <>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/documents"> Enter Zotion </Link>
+                <Link href="/documents"> Enter Yotion </Link>
               </Button>
               <UserButton afterSignOutUrl="/" />
             </>
