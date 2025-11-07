@@ -3,10 +3,12 @@ import { getDb } from '@/lib/db/client';
 import { documents } from '@/lib/db/schema';
 import { eq, and, isNull, desc } from 'drizzle-orm';
 
+export const runtime = 'nodejs';
+
 // GET /api/documents/sidebar - Get documents for sidebar (by parent)
 export async function GET(request: NextRequest) {
   try {
-    const db = getDb();
+    const db = await getDb();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const parentDocumentId = searchParams.get('parentDocument');

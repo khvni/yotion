@@ -3,10 +3,12 @@ import { getDb } from '@/lib/db/client';
 import { documents } from '@/lib/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 
+export const runtime = 'nodejs';
+
 // GET /api/documents/search - Get all non-archived documents for search
 export async function GET(request: NextRequest) {
   try {
-    const db = getDb();
+    const db = await getDb();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 

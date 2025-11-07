@@ -3,9 +3,11 @@ import { getDb } from '@/lib/db/client';
 import { documents } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 
+export const runtime = 'nodejs';
+
 // Helper function to recursively restore all children
 async function recursiveRestore(documentId: number, userId: string): Promise<void> {
-  const db = getDb();
+  const db = await getDb();
   // Find all children of this document
   const children = await db
     .select()
@@ -34,7 +36,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const db = getDb();
+    const db = await getDb();
     const id = parseInt(params.id);
     const body = await request.json();
     const { userId } = body;

@@ -3,13 +3,15 @@ import { getDb } from '@/lib/db/client';
 import { documents } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 
+export const runtime = 'nodejs';
+
 // GET /api/documents/[id] - Get a document by ID
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const db = getDb();
+    const db = await getDb();
     const id = parseInt(params.id);
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
@@ -63,7 +65,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const db = getDb();
+    const db = await getDb();
     const id = parseInt(params.id);
     const body = await request.json();
     const { userId, title, content, coverImage, icon, isPublished } = body;
@@ -136,7 +138,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const db = getDb();
+    const db = await getDb();
     const id = parseInt(params.id);
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
