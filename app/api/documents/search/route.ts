@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/client';
+import { getDb } from '@/lib/db/client';
 import { documents } from '@/lib/db/schema';
-import { initDatabase } from '@/lib/db/init';
 import { eq, and, desc } from 'drizzle-orm';
-
-// Ensure database is initialized
-initDatabase();
 
 // GET /api/documents/search - Get all non-archived documents for search
 export async function GET(request: NextRequest) {
   try {
+    const db = await getDb();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 

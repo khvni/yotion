@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/client';
+import { getDb } from '@/lib/db/client';
 import { documents } from '@/lib/db/schema';
-import { initDatabase } from '@/lib/db/init';
 import { eq, and, isNull, desc } from 'drizzle-orm';
-
-// Ensure database is initialized
-initDatabase();
 
 // GET /api/documents/sidebar - Get documents for sidebar (by parent)
 export async function GET(request: NextRequest) {
   try {
+    const db = await getDb();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const parentDocumentId = searchParams.get('parentDocument');

@@ -2,8 +2,8 @@ import { PGlite } from '@electric-sql/pglite';
 import { drizzle } from 'drizzle-orm/pglite';
 import * as schema from './schema';
 
-// Use a relative path string directly for PGlite
-const dbPath = './data/notion.db';
+// Use an absolute path as a string for PGlite
+const dbPath = `${process.cwd()}/data/noto.db`;
 
 // Create a singleton PGlite client
 let client: PGlite | null = null;

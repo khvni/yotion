@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/client';
+import { getDb } from '@/lib/db/client';
 import { documents } from '@/lib/db/schema';
-import { initDatabase } from '@/lib/db/init';
 import { eq, and } from 'drizzle-orm';
-
-// Ensure database is initialized
-initDatabase();
 
 // GET /api/documents/[id] - Get a document by ID
 export async function GET(
@@ -13,6 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const db = await getDb();
     const id = parseInt(params.id);
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
@@ -66,6 +63,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const db = await getDb();
     const id = parseInt(params.id);
     const body = await request.json();
     const { userId, title, content, coverImage, icon, isPublished } = body;
@@ -138,6 +136,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const db = await getDb();
     const id = parseInt(params.id);
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');

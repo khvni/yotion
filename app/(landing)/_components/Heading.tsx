@@ -14,15 +14,14 @@ export const Heading = () => {
   return (
     <div className="max-w-3xl space-y-4">
       <h1 className="text-3xl font-bold sm:text-5xl md:text-5xl">
-        Your Ideas💡, Documents📕, & Plans🚀. Welcome to{" "}
-        <span className="underline">Yotion</span>
+        Your Ideas, Documents, & Plans.
       </h1>
       <h2 className="text-base font-medium sm:text-xl">
         Yotion is the connected workspace where <br /> better, faster work
         happens.
       </h2>
       <h3 className="text-sm text-muted-foreground sm:text-base italic">
-        Open source + AI is an unbeatable duo. Incredible how polished something can look right out of the box with just an hour to tinker.
+        With open source + AI, you can make work happen in just an hour.
       </h3>
       {isLoading && (
         <div className="flex w-full items-center justify-center">

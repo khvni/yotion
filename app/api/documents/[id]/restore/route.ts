@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/client';
+import { getDb } from '@/lib/db/client';
 import { documents } from '@/lib/db/schema';
-import { initDatabase } from '@/lib/db/init';
 import { eq, and } from 'drizzle-orm';
-
-// Ensure database is initialized
-initDatabase();
 
 // Helper function to recursively restore all children
 async function recursiveRestore(documentId: number, userId: string): Promise<void> {
+  const db = await getDb();
   // Find all children of this document
   const children = await db
     .select()
@@ -37,6 +34,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
+    const db = await getDb();
     const id = parseInt(params.id);
     const body = await request.json();
     const { userId } = body;
