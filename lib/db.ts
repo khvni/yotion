@@ -8,7 +8,7 @@ export async function getDatabase(): Promise<PGlite> {
   if (db) return db;
 
   // Use memory mode for Next.js compatibility
-  db = new PGlite();
+  db = new PGlite("memory://");
 
   // Initialize schema
   await db.exec(`
@@ -101,7 +101,7 @@ export async function createBlock(input: CreateBlockInput): Promise<Block> {
     type: row.type,
     content: row.content,
     order: row.order_num,
-    metadata: JSON.parse(row.metadata),
+    metadata: typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
   };
@@ -150,7 +150,7 @@ export async function updateBlock(id: string, input: UpdateBlockInput): Promise<
     type: row.type,
     content: row.content,
     order: row.order_num,
-    metadata: JSON.parse(row.metadata),
+    metadata: typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
   };
