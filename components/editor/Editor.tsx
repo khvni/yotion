@@ -129,8 +129,8 @@ export function Editor() {
       className="editor-container max-w-4xl mx-auto py-8 px-4"
     >
       <div className="space-y-1">
-        {blocks
-          ?.sort((a, b) => a.order - b.order)
+        {(blocks || [])
+          .sort((a, b) => a.order - b.order)
           .map((block) => (
             <BlockComponent
               key={block.id}
