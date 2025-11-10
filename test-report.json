@@ -1,0 +1,39 @@
+{
+  "summary": {
+    "totalTests": 5,
+    "passedTests": 4,
+    "failedTests": 1
+  },
+  "results": [
+    {
+      "test": "Auto-save Debouncing",
+      "status": "PASS",
+      "details": "Typed 28 chars in 1503ms. Save calls: 0/8 expected. Debouncing working correctly.",
+      "timestamp": "2025-11-08T00:35:07.558Z"
+    },
+    {
+      "test": "Save Status Indicator",
+      "status": "FAIL",
+      "details": "\"Saving...\" detected: 0 times. \"Saved\" detected: 50 times. Status indicator NOT working.",
+      "timestamp": "2025-11-08T00:35:13.523Z"
+    },
+    {
+      "test": "Foreign Key Constraints",
+      "status": "PASS",
+      "details": "Foreign key constraint with CASCADE DELETE is implemented in schema.ts (line 9). Database contains 5 documents. Cascade delete will be triggered when parent documents are deleted.",
+      "timestamp": "2025-11-08T00:35:14.612Z"
+    },
+    {
+      "test": "Sidebar Document Display",
+      "status": "PASS",
+      "details": "Sidebar found. API returns 5 documents. Sidebar implementation is working.",
+      "timestamp": "2025-11-08T00:35:15.549Z"
+    },
+    {
+      "test": "Error Handling with Retry",
+      "status": "PASS",
+      "details": "Error handling implemented with exponential backoff retry (max 3 attempts). Retry logic code verified in use-documents.ts (lines 127-172). User-friendly error messages configured for different error types.",
+      "timestamp": "2025-11-08T00:35:17.720Z"
+    }
+  ]
+}

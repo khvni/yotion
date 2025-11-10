@@ -15,6 +15,11 @@ import { ChevronsLeftRight } from "lucide-react";
 
 export const UserItem = () => {
   const { user } = useUser();
+  const isDevMode = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === 'true';
+
+  // In dev bypass mode, show a default user
+  const displayName = user?.fullName || (isDevMode ? "Dev User" : "Guest");
+  const displayEmail = user?.emailAddresses?.[0]?.emailAddress || (isDevMode ? "dev_user_123@dev.local" : "");
 
   return (
     <DropdownMenu>
@@ -28,7 +33,7 @@ export const UserItem = () => {
               <AvatarImage src={user?.imageUrl} />
             </Avatar>
             <span className="line-clamp-1 text-start font-medium">
-              {user?.fullName}&apos;s Yotion
+              {displayName}&apos;s Yotion
             </span>
           </div>
           <ChevronsLeftRight className="ml-2 h-4 w-4 rotate-90 text-muted-foreground" />
@@ -42,7 +47,7 @@ export const UserItem = () => {
       >
         <div className="flex flex-col space-y-4 p-2">
           <p className="text-xs font-medium leading-none text-muted-foreground">
-            {user?.emailAddresses[0].emailAddress}
+            {displayEmail}
           </p>
           <div className="flex items-center gap-x-2">
             <div className="rounded-md bg-secondary p-1">
@@ -52,14 +57,18 @@ export const UserItem = () => {
             </div>
             <div className="space-y-1">
               <p className="line-clamp-1 text-sm">
-                {user?.fullName}&apos;s Yotion
+                {displayName}&apos;s Yotion
               </p>
             </div>
           </div>
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="w-full cursor-pointer text-muted-foreground">
-          <SignOutButton>Log Out</SignOutButton>
+          {isDevMode && !user ? (
+            <span>Dev Mode Active</span>
+          ) : (
+            <SignOutButton>Log Out</SignOutButton>
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

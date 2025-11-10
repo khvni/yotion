@@ -67,7 +67,19 @@ export async function PUT(
   try {
     const db = await getDb();
     const id = parseInt(params.id);
-    const body = await request.json();
+
+    // Parse request body with error handling
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      console.error('[API] Failed to parse request body:', parseError);
+      return NextResponse.json(
+        { error: 'Invalid request body' },
+        { status: 400 }
+      );
+    }
+
     const { userId, title, content, coverImage, icon, isPublished } = body;
 
     if (isNaN(id)) {
@@ -84,12 +96,30 @@ export async function PUT(
       );
     }
 
+    // Check content size (prevent payload too large errors)
+    if (content && typeof content === 'string' && content.length > 10 * 1024 * 1024) {
+      console.error(`[API] Content too large: ${content.length} bytes`);
+      return NextResponse.json(
+        { error: 'Document content is too large. Maximum size is 10MB.' },
+        { status: 413 }
+      );
+    }
+
     // Check if document exists and user owns it
-    const [existingDocument] = await db
-      .select()
-      .from(documents)
-      .where(eq(documents.id, id))
-      .limit(1);
+    let existingDocument;
+    try {
+      [existingDocument] = await db
+        .select()
+        .from(documents)
+        .where(eq(documents.id, id))
+        .limit(1);
+    } catch (dbError) {
+      console.error('[API] Database error while fetching document:', dbError);
+      return NextResponse.json(
+        { error: 'Database error. Please try again.' },
+        { status: 500 }
+      );
+    }
 
     if (!existingDocument) {
       return NextResponse.json(
@@ -116,15 +146,46 @@ export async function PUT(
     if (icon !== undefined) updateData.icon = icon;
     if (isPublished !== undefined) updateData.isPublished = isPublished;
 
-    const [document] = await db
-      .update(documents)
-      .set(updateData)
-      .where(eq(documents.id, id))
-      .returning();
+    // Perform update with error handling
+    let document;
+    try {
+      [document] = await db
+        .update(documents)
+        .set(updateData)
+        .where(eq(documents.id, id))
+        .returning();
+    } catch (dbError) {
+      console.error('[API] Database error while updating document:', dbError);
+      return NextResponse.json(
+        { error: 'Failed to save document. Please try again.' },
+        { status: 500 }
+      );
+    }
 
+    console.log(`[API] Successfully updated document ${id}`);
     return NextResponse.json({ document });
   } catch (error) {
-    console.error('Error updating document:', error);
+    console.error('[API] Unexpected error updating document:', error);
+
+    // Check for specific error types
+    if (error instanceof Error) {
+      // Network/timeout errors
+      if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT')) {
+        return NextResponse.json(
+          { error: 'Request timed out. Please try again.' },
+          { status: 408 }
+        );
+      }
+
+      // Database connection errors
+      if (error.message.includes('ECONNREFUSED') || error.message.includes('database')) {
+        return NextResponse.json(
+          { error: 'Database connection error. Please try again.' },
+          { status: 503 }
+        );
+      }
+    }
+
     return NextResponse.json(
       { error: 'Failed to update document' },
       { status: 500 }

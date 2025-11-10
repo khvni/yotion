@@ -7,7 +7,6 @@ import { ImageIcon, X } from "lucide-react";
 import { useCoverImage } from "@/hooks/useCoverImage";
 import { useUpdateDocument } from "@/hooks/use-documents";
 import { useParams } from "next/navigation";
-import { useEdgeStore } from "@/lib/edgestore";
 import { Skeleton } from "./ui/skeleton";
 
 interface CoverImageProps {
@@ -16,18 +15,11 @@ interface CoverImageProps {
 }
 
 export const Cover = ({ url, preview }: CoverImageProps) => {
-  const { edgestore } = useEdgeStore();
-
   const params = useParams();
   const coverImage = useCoverImage();
   const { updateDocument } = useUpdateDocument();
 
   const onRemove = async () => {
-    if (url) {
-      await edgestore.publicFiles.delete({
-        url: url,
-      });
-    }
     const documentId = parseInt(params.documentId as string);
     updateDocument(documentId, {
       coverImage: null,

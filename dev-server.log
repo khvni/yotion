@@ -1,0 +1,91 @@
+
+> notion-clone@0.1.0 dev
+> next dev -p 3002
+
+  ▲ Next.js 14.2.32
+  - Local:        http://localhost:3002
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1289ms
+ ✓ Compiled /middleware in 454ms (199 modules)
+(node:94370) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ○ Compiling / ...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled / in 3s (1038 modules)
+ GET / 200 in 3126ms
+ ✓ Compiled in 424ms (504 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (176kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /api/documents/sidebar in 270ms (662 modules)
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 340ms
+ ○ Compiling /documents ...
+ ✓ Compiled /documents in 960ms (1333 modules)
+ GET /documents 200 in 1099ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 69ms
+ ✓ Compiled /api/documents/search in 149ms (756 modules)
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 190ms
+ GET /api/documents/search?userId=dev_user_123 200 in 275ms
+ GET /api/documents/search?userId=dev_user_123 200 in 3ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 6ms
+ GET /api/documents/search?userId=dev_user_123 200 in 11ms
+ ✓ Compiled /api/documents in 143ms (758 modules)
+ POST /api/documents 201 in 175ms
+ ○ Compiling /documents/[documentId] ...
+ ✓ Compiled /documents/[documentId] in 688ms (1403 modules)
+ ✓ Compiled /api/documents/[id] in 310ms (793 modules)
+ GET /api/documents/22?userId=dev_user_123 200 in 572ms
+ GET /api/documents/22?userId=dev_user_123 200 in 4ms
+ GET /api/documents/22?userId=dev_user_123 200 in 8ms
+ GET /api/documents/22?userId=dev_user_123 200 in 4ms
+[API] Successfully updated document 22
+ PUT /api/documents/22 200 in 7ms
+ GET /documents 200 in 93ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 28ms
+ GET /api/documents/search?userId=dev_user_123 200 in 34ms
+ GET /api/documents/search?userId=dev_user_123 200 in 7ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 9ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 21ms
+ GET /api/documents/search?userId=dev_user_123 200 in 31ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 2ms
+ GET /documents 200 in 16ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 5ms
+ GET /api/documents/search?userId=dev_user_123 200 in 9ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 5ms
+ GET /api/documents/search?userId=dev_user_123 200 in 6ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 3ms
+ GET /api/documents/search?userId=dev_user_123 200 in 5ms
+ GET /api/documents/sidebar?userId=dev_user_123 200 in 4ms
+ PUT /api/documents/999999 404 in 5ms
+ GET / 200 in 64ms
+ GET / 200 in 28ms
+ GET /api/documents/search?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 9ms
+ GET /api/documents/sidebar?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 11ms
+ GET /api/documents/search?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 3ms
+ GET /api/documents/sidebar?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 5ms
+ POST /api/documents 201 in 12ms
+ GET /api/documents/23?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 6ms
+ GET /api/documents/23?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 2ms
+ GET /api/documents/23?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 4ms
+ GET /api/documents/23?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 2ms
+[API] Successfully updated document 23
+ PUT /api/documents/23 200 in 7ms
+[API] Successfully updated document 23
+ PUT /api/documents/23 200 in 9ms
+[API] Successfully updated document 23
+ PUT /api/documents/23 200 in 10ms
+[API] Successfully updated document 23
+ PUT /api/documents/23 200 in 8ms
+ GET / 200 in 129ms
+ GET /api/documents/sidebar?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 22ms
+ GET /api/documents/search?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 24ms
+ GET /api/documents/sidebar?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 7ms
+ GET /api/documents/search?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 8ms
+ GET /api/documents/23?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 6ms
+ GET /api/documents/23?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 5ms
+ GET /api/documents/23?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 5ms
+ GET /api/documents/23?userId=user_35AHYNr1cMsZ7GQwR4pdqIU90XM 200 in 2ms
+[API] Successfully updated document 23
+ PUT /api/documents/23 200 in 7ms

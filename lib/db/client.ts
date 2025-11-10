@@ -23,8 +23,16 @@ export function getDb() {
 
     client = new Database(dbPath);
 
-    // Enable foreign keys
+    // CRITICAL: Enable foreign key constraints for this connection
+    // This must be set on EVERY connection as it's not persisted in the database
+    // Without this, child documents will become orphaned when parent documents are deleted
     client.pragma('foreign_keys = ON');
+
+    // Verify foreign keys are enabled
+    const fkEnabled = client.pragma('foreign_keys', { simple: true });
+    if (fkEnabled !== 1) {
+      throw new Error('Failed to enable foreign key constraints');
+    }
 
     // Initialize database schema
     client.exec(`

@@ -11,7 +11,11 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = isSignedIn;
   const isLoading = !isLoaded;
 
-  if (isLoading) {
+  // Dev mode bypass
+  const isDev = process.env.NODE_ENV === 'development';
+  const devBypass = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === 'true';
+
+  if (isLoading && !devBypass) {
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner size="md" />
@@ -19,7 +23,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !(isDev && devBypass)) {
     return redirect("/");
   }
 
