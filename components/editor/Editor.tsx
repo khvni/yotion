@@ -18,7 +18,7 @@ export function Editor() {
         const response = await fetch("/api/blocks");
         if (response.ok) {
           const data = await response.json();
-          setBlocks(data);
+          setBlocks(data.blocks);
         }
       } catch (error) {
         console.error("Failed to load blocks:", error);
@@ -40,7 +40,7 @@ export function Editor() {
       e.preventDefault();
       redo();
     }
-  }, []);
+  }, [undo, redo]);
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
