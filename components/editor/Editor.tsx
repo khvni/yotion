@@ -130,7 +130,7 @@ export function Editor() {
     >
       <div className="space-y-1">
         {blocks
-          .sort((a, b) => a.order - b.order)
+          ?.sort((a, b) => a.order - b.order)
           .map((block) => (
             <BlockComponent
               key={block.id}

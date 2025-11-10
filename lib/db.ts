@@ -1,12 +1,14 @@
 import { PGlite } from "@electric-sql/pglite";
 import { Block, CreateBlockInput, UpdateBlockInput } from "./types";
+import path from "path";
 
 let db: PGlite | null = null;
 
 export async function getDatabase(): Promise<PGlite> {
   if (db) return db;
 
-  db = new PGlite("./pglite-data");
+  // Use memory mode for Next.js compatibility
+  db = new PGlite();
 
   // Initialize schema
   await db.exec(`
