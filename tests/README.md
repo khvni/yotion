@@ -7,6 +7,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
 ## Test Cases Implemented
 
 ### 1. **should load and display initial blocks**
+
 - **Purpose**: Verifies that blocks from the database are properly loaded and displayed when the page loads
 - **What it tests**:
   - Editor container is visible
@@ -15,6 +16,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - Blocks are displayed in the correct order
 
 ### 2. **should add new text block on Enter**
+
 - **Purpose**: Tests block creation functionality when pressing Enter
 - **What it tests**:
   - Pressing Enter in a focused block creates a new block below
@@ -23,6 +25,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - New block is properly positioned in the DOM
 
 ### 3. **should show slash command menu on /**
+
 - **Purpose**: Verifies slash command menu appears when typing "/"
 - **What it tests**:
   - Typing "/" triggers the menu display
@@ -30,6 +33,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - All block type options are present (paragraph, h1, h2, h3, image)
 
 ### 4. **should convert block type from menu**
+
 - **Purpose**: Tests block type conversion using the slash menu
 - **What it tests**:
   - Slash menu opens correctly
@@ -39,6 +43,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - Menu closes after selection
 
 ### 5. **should add image block**
+
 - **Purpose**: Tests image block creation via slash menu
 - **What it tests**:
   - Image option in slash menu works
@@ -48,6 +53,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - Image is visible in the editor
 
 ### 6. **should edit text content**
+
 - **Purpose**: Verifies text editing and persistence
 - **What it tests**:
   - Clicking a block focuses it
@@ -57,6 +63,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - Content persists after blur
 
 ### 7. **should delete empty block on Backspace**
+
 - **Purpose**: Tests block deletion when Backspace is pressed on empty block
 - **What it tests**:
   - Empty block can be deleted
@@ -65,6 +72,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - Focus returns to previous block
 
 ### 8. **should persist changes after page refresh**
+
 - **Purpose**: Ensures data persistence across page reloads
 - **What it tests**:
   - New blocks are created and saved
@@ -74,6 +82,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - Content is still present after refresh
 
 ### 9. **should handle keyboard navigation in slash menu** (Bonus)
+
 - **Purpose**: Tests keyboard navigation within the slash menu
 - **What it tests**:
   - Arrow keys navigate menu options
@@ -81,6 +90,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - Selected block type is applied
 
 ### 10. **should close slash menu on Escape** (Bonus)
+
 - **Purpose**: Verifies menu can be dismissed with Escape key
 - **What it tests**:
   - Escape key closes the menu
@@ -88,6 +98,7 @@ This test suite provides comprehensive end-to-end testing for the Notion-inspire
   - "/" character remains in content
 
 ### 11. **should maintain block order after operations** (Bonus)
+
 - **Purpose**: Ensures block ordering is maintained correctly
 - **What it tests**:
   - Blocks maintain proper order
@@ -103,6 +114,7 @@ For these tests to pass, the following components and features need to be implem
 Add these `data-testid` attributes to your components:
 
 #### Editor.tsx
+
 ```tsx
 <div
   ref={editorRef}
@@ -112,6 +124,7 @@ Add these `data-testid` attributes to your components:
 ```
 
 #### Block.tsx
+
 ```tsx
 <div
   data-block-id={block.id}
@@ -123,10 +136,11 @@ Add these `data-testid` attributes to your components:
 ```
 
 #### TextBlock.tsx (needs to be created)
+
 ```tsx
 <div
   contentEditable
-  data-testid={`text-block-${block.id}`}  // ADD THIS
+  data-testid={`text-block-${block.id}`} // ADD THIS
   suppressContentEditableWarning
   onKeyDown={handleKeyDown}
   onBlur={handleBlur}
@@ -136,8 +150,11 @@ Add these `data-testid` attributes to your components:
 ```
 
 #### ImageBlock.tsx (needs to be created)
+
 ```tsx
-<div data-testid={`image-block-${block.id}`}>  {/* ADD THIS */}
+<div data-testid={`image-block-${block.id}`}>
+  {" "}
+  {/* ADD THIS */}
   <Rnd {...rndProps}>
     <img src={block.content} alt={block.metadata?.alt || ""} />
   </Rnd>
@@ -145,6 +162,7 @@ Add these `data-testid` attributes to your components:
 ```
 
 #### BlockTypeMenu.tsx (needs to be created)
+
 ```tsx
 <div data-testid="block-type-menu" className="menu">
   <button data-testid="menu-option-paragraph">Paragraph</button>
@@ -252,6 +270,7 @@ For consistent test results, consider:
 3. **Mock Data**: Use predictable block IDs and content
 
 Example seed data:
+
 ```typescript
 const seedBlocks = [
   { id: "test-1", type: "h1", content: "Test Document", order: 0 },
@@ -273,21 +292,25 @@ When tests fail:
 ## Common Issues
 
 ### Tests Timeout
+
 - Increase timeout in test: `{ timeout: 10000 }`
 - Check if dev server is running
 - Verify API endpoints are responding
 
 ### Elements Not Found
+
 - Verify data-testid attributes are added
 - Check if elements are rendered conditionally
 - Use `page.pause()` to inspect page state
 
 ### Flaky Tests
+
 - Add explicit waits for API responses
 - Wait for animations to complete
 - Use stable selectors (data-testid)
 
 ### API Calls Not Waiting
+
 - Always wait for API responses: `await page.waitForResponse(...)`
 - Add small delays after operations: `await page.waitForTimeout(500)`
 
@@ -315,6 +338,7 @@ When tests fail:
 ## Coverage
 
 These tests cover:
+
 - ✅ Block loading and rendering
 - ✅ Block creation (text and image)
 - ✅ Block editing
@@ -328,6 +352,7 @@ These tests cover:
 - ✅ Order maintenance
 
 Not covered (future improvements):
+
 - ❌ Undo/redo functionality
 - ❌ Image resizing
 - ❌ Rich text formatting
@@ -338,6 +363,7 @@ Not covered (future improvements):
 ## Contributing
 
 When adding new features:
+
 1. Write tests first (TDD approach)
 2. Add data-testid attributes
 3. Ensure tests are deterministic

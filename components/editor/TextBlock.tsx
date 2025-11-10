@@ -10,8 +10,7 @@ interface TextBlockProps {
 }
 
 export function TextBlock({ block, onEnter }: TextBlockProps) {
-  const { updateBlock, deleteBlock, openMenu, closeMenu, blocks } =
-    useEditorStore();
+  const { updateBlock, deleteBlock, openMenu, closeMenu, blocks } = useEditorStore();
   const contentRef = useRef<HTMLDivElement>(null);
   const lastContentRef = useRef<string>(block.content);
 

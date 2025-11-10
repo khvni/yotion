@@ -14,10 +14,7 @@ export async function GET() {
     return NextResponse.json({ blocks }, { status: 200 });
   } catch (error) {
     console.error("Error fetching blocks:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch blocks" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch blocks" }, { status: 500 });
   }
 }
 
@@ -57,9 +54,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ block }, { status: 201 });
   } catch (error) {
     console.error("Error creating block:", error);
-    return NextResponse.json(
-      { error: "Failed to create block" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create block" }, { status: 500 });
   }
 }

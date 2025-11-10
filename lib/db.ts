@@ -137,10 +137,7 @@ export async function updateBlock(id: string, input: UpdateBlockInput): Promise<
   updates.push(`updated_at = CURRENT_TIMESTAMP`);
   values.push(id);
 
-  await database.query(
-    `UPDATE blocks SET ${updates.join(", ")} WHERE id = $${paramIndex}`,
-    values
-  );
+  await database.query(`UPDATE blocks SET ${updates.join(", ")} WHERE id = $${paramIndex}`, values);
 
   const result = await database.query("SELECT * FROM blocks WHERE id = $1", [id]);
   const row = result.rows[0] as any;
