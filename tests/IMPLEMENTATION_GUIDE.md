@@ -7,6 +7,7 @@ Use this guide to quickly implement the required features for the E2E tests to p
 ## 1. Add Data-TestID Attributes
 
 ### Editor.tsx
+
 ```diff
   return (
     <div
@@ -17,6 +18,7 @@ Use this guide to quickly implement the required features for the E2E tests to p
 ```
 
 ### Block.tsx
+
 ```diff
   return (
     <div
@@ -482,22 +484,28 @@ npx playwright test --headed
 ## Common Issues and Solutions
 
 ### Issue: Tests timeout waiting for elements
+
 **Solution**: Ensure all data-testid attributes are added exactly as specified
 
 ### Issue: API calls fail
+
 **Solution**: Check that API routes are returning data in correct format:
+
 - GET /api/blocks → `{ blocks: Block[] }`
 - POST /api/blocks → `{ block: Block }`
 - PATCH /api/blocks/[id] → `{ block: Block }`
 - DELETE /api/blocks/[id] → `{ success: true }`
 
 ### Issue: Slash menu doesn't appear
+
 **Solution**: Make sure "/" keypress triggers `openMenu()` in TextBlock
 
 ### Issue: Focus doesn't move to new block
+
 **Solution**: Check that `lastFocusedBlockRef` logic is working in Editor
 
 ### Issue: Blocks don't delete
+
 **Solution**: Verify DELETE endpoint is working and deleteBlock is called
 
 ## Verification Steps
@@ -515,6 +523,7 @@ npx playwright test --headed
 ## Expected Test Results
 
 All 11 tests should pass:
+
 - ✅ should load and display initial blocks
 - ✅ should add new text block on Enter
 - ✅ should show slash command menu on /

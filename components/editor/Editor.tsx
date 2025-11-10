@@ -49,7 +49,10 @@ export function Editor() {
 
   // Create new block
   const createNewBlock = useCallback(
-    async (afterBlockId: string, type: "paragraph" | "h1" | "h2" | "h3" | "image" = "paragraph") => {
+    async (
+      afterBlockId: string,
+      type: "paragraph" | "h1" | "h2" | "h3" | "image" = "paragraph"
+    ) => {
       const afterBlock = blocks.find((b) => b.id === afterBlockId);
       if (!afterBlock) return;
 
@@ -57,9 +60,7 @@ export function Editor() {
 
       // Update orders of blocks after this one
       const updatedBlocks = blocks.map((block) =>
-        block.order >= newOrder
-          ? { ...block, order: block.order + 1 }
-          : block
+        block.order >= newOrder ? { ...block, order: block.order + 1 } : block
       );
 
       const newBlock = {
@@ -112,9 +113,7 @@ export function Editor() {
         `[data-block-id="${lastFocusedBlockRef.current}"]`
       );
       if (blockElement) {
-        const editableElement = blockElement.querySelector(
-          "[contenteditable]"
-        ) as HTMLElement;
+        const editableElement = blockElement.querySelector("[contenteditable]") as HTMLElement;
         if (editableElement) {
           editableElement.focus();
         }
@@ -124,19 +123,12 @@ export function Editor() {
   }, [blocks]);
 
   return (
-    <div
-      ref={editorRef}
-      className="editor-container max-w-4xl mx-auto py-8 px-4"
-    >
+    <div ref={editorRef} className="editor-container max-w-4xl mx-auto py-8 px-4">
       <div className="space-y-1">
         {(blocks || [])
           .sort((a, b) => a.order - b.order)
           .map((block) => (
-            <BlockComponent
-              key={block.id}
-              block={block}
-              onEnter={() => createNewBlock(block.id)}
-            />
+            <BlockComponent key={block.id} block={block} onEnter={() => createNewBlock(block.id)} />
           ))}
       </div>
 

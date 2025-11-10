@@ -8,10 +8,14 @@ export const runtime = "nodejs";
  * GET /api/blocks/:id
  * Fetch a single block by ID
  */
+<<<<<<< HEAD
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+=======
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+>>>>>>> quality-tree
   try {
     const { id } = await params;
 
@@ -20,19 +24,13 @@ export async function GET(
     const block = blocks.find((b) => b.id === id);
 
     if (!block) {
-      return NextResponse.json(
-        { error: "Block not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Block not found" }, { status: 404 });
     }
 
     return NextResponse.json({ block }, { status: 200 });
   } catch (error) {
     console.error("Error fetching block:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch block" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch block" }, { status: 500 });
   }
 }
 
@@ -40,10 +38,14 @@ export async function GET(
  * PATCH /api/blocks/:id
  * Update a block (content, type, order, metadata)
  */
+<<<<<<< HEAD
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+=======
+export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+>>>>>>> quality-tree
   try {
     const { id } = await params;
     const body = await request.json();
@@ -68,20 +70,14 @@ export async function PATCH(
 
     // Check if there are any updates
     if (Object.keys(input).length === 0) {
-      return NextResponse.json(
-        { error: "No valid fields to update" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
     }
 
     const block = await updateBlock(id, input);
     return NextResponse.json({ block }, { status: 200 });
   } catch (error) {
     console.error("Error updating block:", error);
-    return NextResponse.json(
-      { error: "Failed to update block" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update block" }, { status: 500 });
   }
 }
 
@@ -89,10 +85,14 @@ export async function PATCH(
  * DELETE /api/blocks/:id
  * Delete a block by ID
  */
+<<<<<<< HEAD
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+=======
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+>>>>>>> quality-tree
   try {
     const { id } = await params;
 
@@ -100,9 +100,6 @@ export async function DELETE(
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Error deleting block:", error);
-    return NextResponse.json(
-      { error: "Failed to delete block" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete block" }, { status: 500 });
   }
 }

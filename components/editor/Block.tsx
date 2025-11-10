@@ -21,9 +21,7 @@ export function Block({ block, onEnter }: BlockProps) {
     // Only clear selection if we're not focusing another block
     setTimeout(() => {
       const activeElement = document.activeElement;
-      const isStillInBlock = activeElement?.closest(
-        `[data-block-id="${block.id}"]`
-      );
+      const isStillInBlock = activeElement?.closest(`[data-block-id="${block.id}"]`);
       if (!isStillInBlock) {
         setSelectedBlockId(null);
       }

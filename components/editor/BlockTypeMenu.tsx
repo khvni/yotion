@@ -45,8 +45,7 @@ const menuOptions: MenuOption[] = [
 ];
 
 export function BlockTypeMenu() {
-  const { menuPosition, closeMenu, selectedBlockId, updateBlock, blocks } =
-    useEditorStore();
+  const { menuPosition, closeMenu, selectedBlockId, updateBlock, blocks } = useEditorStore();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,9 +62,7 @@ export function BlockTypeMenu() {
           break;
         case "ArrowUp":
           e.preventDefault();
-          setSelectedIndex(
-            (prev) => (prev - 1 + menuOptions.length) % menuOptions.length
-          );
+          setSelectedIndex((prev) => (prev - 1 + menuOptions.length) % menuOptions.length);
           break;
         case "Enter":
           e.preventDefault();
@@ -165,9 +162,7 @@ export function BlockTypeMenu() {
         top: `${position.y + 4}px`,
       }}
     >
-      <div className="px-2 py-1 text-xs text-gray-500 font-medium">
-        BASIC BLOCKS
-      </div>
+      <div className="px-2 py-1 text-xs text-gray-500 font-medium">BASIC BLOCKS</div>
       {menuOptions.map((option, index) => (
         <button
           key={option.type}
@@ -177,13 +172,9 @@ export function BlockTypeMenu() {
           onClick={() => handleSelectOption(option.type)}
           onMouseEnter={() => setSelectedIndex(index)}
         >
-          <span className="text-lg leading-none mt-0.5 flex-shrink-0">
-            {option.icon}
-          </span>
+          <span className="text-lg leading-none mt-0.5 flex-shrink-0">{option.icon}</span>
           <div className="flex flex-col items-start text-left">
-            <div className="text-sm font-medium text-gray-900">
-              {option.label}
-            </div>
+            <div className="text-sm font-medium text-gray-900">{option.label}</div>
             <div className="text-xs text-gray-500">{option.description}</div>
           </div>
         </button>

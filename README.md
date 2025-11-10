@@ -117,9 +117,11 @@ npm start
 ## API Endpoints
 
 ### GET /api/blocks
+
 Fetch all blocks ordered by position
 
 **Response:**
+
 ```json
 {
   "blocks": [
@@ -137,9 +139,11 @@ Fetch all blocks ordered by position
 ```
 
 ### POST /api/blocks
+
 Create a new block
 
 **Request:**
+
 ```json
 {
   "type": "paragraph",
@@ -150,9 +154,11 @@ Create a new block
 ```
 
 ### PATCH /api/blocks/:id
+
 Update an existing block
 
 **Request:**
+
 ```json
 {
   "content": "Updated content",
@@ -161,9 +167,11 @@ Update an existing block
 ```
 
 ### DELETE /api/blocks/:id
+
 Delete a block
 
 **Response:**
+
 ```json
 {
   "success": true
@@ -203,6 +211,7 @@ npm run format
 The embedded PGlite database is stored in `./pglite-data/`.
 
 **Schema:**
+
 ```sql
 CREATE TABLE blocks (
   id TEXT PRIMARY KEY,
@@ -220,6 +229,7 @@ CREATE TABLE blocks (
 ### Block-Based Design
 
 Each block is an independent unit with:
+
 - Unique ID
 - Type (paragraph, h1, h2, h3, image)
 - Content (text or image URL)
@@ -229,6 +239,7 @@ Each block is an independent unit with:
 ### State Management
 
 Zustand store manages:
+
 - Blocks array (current state)
 - History (past/future states for undo/redo)
 - Selected block ID
@@ -269,6 +280,7 @@ MIT
 ## Acknowledgments
 
 Built as a take-home exercise demonstrating:
+
 - ContentEditable mastery
 - Full-stack TypeScript
 - Block-based editor architecture
