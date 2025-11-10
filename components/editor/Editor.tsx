@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useCallback, useRef } from "react";
-import { useEditorStore, undo, redo } from "@/lib/store";
+import { useEditorStore } from "@/lib/store";
 import { Block as BlockComponent } from "./Block";
 import { BlockTypeMenu } from "./BlockTypeMenu";
 import { v4 as uuidv4 } from "uuid";
 
 export function Editor() {
-  const { blocks, isMenuOpen, addBlock, setBlocks } = useEditorStore();
+  const { blocks, isMenuOpen, addBlock, setBlocks, undo, redo } = useEditorStore();
   const editorRef = useRef<HTMLDivElement>(null);
   const lastFocusedBlockRef = useRef<string | null>(null);
 

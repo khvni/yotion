@@ -1,12 +1,17 @@
 import { create } from "zustand";
-import { temporal } from "zustand/middleware";
-import { Block, CreateBlockInput, UpdateBlockInput } from "./types";
+import { Block } from "./types";
+
+interface HistoryState {
+  past: Block[][];
+  future: Block[][];
+}
 
 interface EditorState {
   blocks: Block[];
   selectedBlockId: string | null;
   isMenuOpen: boolean;
   menuPosition: { x: number; y: number } | null;
+  history: HistoryState;
 }
 
 interface EditorActions {
@@ -18,88 +23,113 @@ interface EditorActions {
   setSelectedBlockId: (id: string | null) => void;
   openMenu: (position: { x: number; y: number }) => void;
   closeMenu: () => void;
+  undo: () => void;
+  redo: () => void;
 }
 
 type EditorStore = EditorState & EditorActions;
 
-export const useEditorStore = create<EditorStore>()(
-  temporal(
-    (set, get) => ({
-      // State
-      blocks: [],
-      selectedBlockId: null,
+const saveToHistory = (state: EditorState): HistoryState => {
+  const newPast = [...state.history.past, state.blocks].slice(-100); // Keep last 100
+  return {
+    past: newPast,
+    future: [],
+  };
+};
+
+export const useEditorStore = create<EditorStore>()((set, get) => ({
+  // State
+  blocks: [],
+  selectedBlockId: null,
+  isMenuOpen: false,
+  menuPosition: null,
+  history: {
+    past: [],
+    future: [],
+  },
+
+  // Actions
+  setBlocks: (blocks) => set({ blocks }),
+
+  addBlock: (block) =>
+    set((state) => ({
+      blocks: [...state.blocks, block],
+      history: saveToHistory(state),
+    })),
+
+  updateBlock: (id, updates) =>
+    set((state) => ({
+      blocks: state.blocks.map((block) =>
+        block.id === id
+          ? {
+              ...block,
+              ...updates,
+              updatedAt: new Date(),
+            }
+          : block
+      ),
+      history: saveToHistory(state),
+    })),
+
+  deleteBlock: (id) =>
+    set((state) => {
+      const filtered = state.blocks.filter((block) => block.id !== id);
+      return {
+        blocks: filtered.map((block, index) => ({
+          ...block,
+          order: index,
+        })),
+        history: saveToHistory(state),
+      };
+    }),
+
+  reorderBlocks: () =>
+    set((state) => ({
+      blocks: state.blocks.map((block, index) => ({
+        ...block,
+        order: index,
+      })),
+    })),
+
+  setSelectedBlockId: (id) => set({ selectedBlockId: id }),
+
+  openMenu: (position) =>
+    set({
+      isMenuOpen: true,
+      menuPosition: position,
+    }),
+
+  closeMenu: () =>
+    set({
       isMenuOpen: false,
       menuPosition: null,
-
-      // Actions
-      setBlocks: (blocks) => set({ blocks }),
-
-      addBlock: (block) =>
-        set((state) => ({
-          blocks: [...state.blocks, block],
-        })),
-
-      updateBlock: (id, updates) =>
-        set((state) => ({
-          blocks: state.blocks.map((block) =>
-            block.id === id
-              ? {
-                  ...block,
-                  ...updates,
-                  updatedAt: new Date(),
-                }
-              : block
-          ),
-        })),
-
-      deleteBlock: (id) =>
-        set((state) => {
-          const filtered = state.blocks.filter((block) => block.id !== id);
-          // Reorder remaining blocks
-          return {
-            blocks: filtered.map((block, index) => ({
-              ...block,
-              order: index,
-            })),
-          };
-        }),
-
-      reorderBlocks: () =>
-        set((state) => ({
-          blocks: state.blocks.map((block, index) => ({
-            ...block,
-            order: index,
-          })),
-        })),
-
-      setSelectedBlockId: (id) => set({ selectedBlockId: id }),
-
-      openMenu: (position) =>
-        set({
-          isMenuOpen: true,
-          menuPosition: position,
-        }),
-
-      closeMenu: () =>
-        set({
-          isMenuOpen: false,
-          menuPosition: null,
-        }),
     }),
-    {
-      equality: (a, b) => a === b,
-      limit: 100, // Keep last 100 states for undo/redo
-    }
-  )
-);
 
-// Undo/redo helpers
-export const undo = () => {
-  const { undo } = useEditorStore.temporal.getState();
-  undo();
-};
+  undo: () =>
+    set((state) => {
+      if (state.history.past.length === 0) return state;
+      const previous = state.history.past[state.history.past.length - 1];
+      const newPast = state.history.past.slice(0, -1);
+      return {
+        blocks: previous,
+        history: {
+          past: newPast,
+          future: [state.blocks, ...state.history.future],
+        },
+      };
+    }),
 
-export const redo = () => {
-  const { redo } = useEditorStore.temporal.getState();
-  redo();
-};
+  redo: () =>
+    set((state) => {
+      if (state.history.future.length === 0) return state;
+      const next = state.history.future[0];
+      const newFuture = state.history.future.slice(1);
+      return {
+        blocks: next,
+        history: {
+          past: [...state.history.past, state.blocks],
+          future: newFuture,
+        },
+      };
+    }),
+}));
