@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate required fields
-    if (!body.type || !body.content === undefined || body.order === undefined) {
+    if (!body.type || body.content === undefined || body.order === undefined) {
       return NextResponse.json(
         { error: "Missing required fields: type, content, and order are required" },
         { status: 400 }
