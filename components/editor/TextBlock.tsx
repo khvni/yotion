@@ -92,7 +92,7 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
         return;
       }
     },
-    [openMenu, closeMenu, onEnter, blocks.length]
+    [openMenu, closeMenu, onEnter, blocks.length, handleDelete]
   );
 
   const handleInput = useCallback(() => {

@@ -77,7 +77,7 @@ export function BlockTypeMenu() {
           break;
       }
     },
-    [selectedIndex, closeMenu]
+    [selectedIndex, closeMenu, handleSelectOption]
   );
 
   useEffect(() => {
