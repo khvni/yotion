@@ -52,6 +52,43 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
     }
   };
 
+  const handleDelete = useCallback(async () => {
+    // Find previous block to focus
+    const currentIndex = blocks.findIndex((b) => b.id === block.id);
+    const previousBlock = currentIndex > 0 ? blocks[currentIndex - 1] : null;
+
+    // Delete from store
+    deleteBlock(block.id);
+
+    // Delete from API
+    try {
+      await fetch(`/api/blocks/${block.id}`, {
+        method: "DELETE",
+      });
+    } catch (error) {
+      console.error("Failed to delete block:", error);
+    }
+
+    // Focus previous block
+    if (previousBlock) {
+      setTimeout(() => {
+        const prevElement = document.querySelector(
+          `[data-block-id="${previousBlock.id}"] [contenteditable]`
+        ) as HTMLElement;
+        if (prevElement) {
+          prevElement.focus();
+          // Move cursor to end
+          const range = document.createRange();
+          const sel = window.getSelection();
+          range.selectNodeContents(prevElement);
+          range.collapse(false);
+          sel?.removeAllRanges();
+          sel?.addRange(range);
+        }
+      }, 0);
+    }
+  }, [block.id, blocks, deleteBlock]);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
       const target = e.currentTarget;
@@ -122,43 +159,6 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
       console.error("Failed to save block:", error);
     }
   }, [block.id]);
-
-  const handleDelete = useCallback(async () => {
-    // Find previous block to focus
-    const currentIndex = blocks.findIndex((b) => b.id === block.id);
-    const previousBlock = currentIndex > 0 ? blocks[currentIndex - 1] : null;
-
-    // Delete from store
-    deleteBlock(block.id);
-
-    // Delete from API
-    try {
-      await fetch(`/api/blocks/${block.id}`, {
-        method: "DELETE",
-      });
-    } catch (error) {
-      console.error("Failed to delete block:", error);
-    }
-
-    // Focus previous block
-    if (previousBlock) {
-      setTimeout(() => {
-        const prevElement = document.querySelector(
-          `[data-block-id="${previousBlock.id}"] [contenteditable]`
-        ) as HTMLElement;
-        if (prevElement) {
-          prevElement.focus();
-          // Move cursor to end
-          const range = document.createRange();
-          const selection = window.getSelection();
-          range.selectNodeContents(prevElement);
-          range.collapse(false);
-          selection?.removeAllRanges();
-          selection?.addRange(range);
-        }
-      }, 0);
-    }
-  }, [block.id, blocks, deleteBlock]);
 
   const commonProps = {
     ref: contentRef,
