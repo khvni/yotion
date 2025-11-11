@@ -96,8 +96,8 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
       const cursorAtStart =
         selection && selection.anchorOffset === 0 && selection.focusOffset === 0;
 
-      // Detect "/" at start of line to open menu
-      if (e.key === "/" && cursorAtStart && content === "") {
+      // Detect "/" at start of empty line to open menu
+      if (e.key === "/" && content === "") {
         e.preventDefault();
         const rect = target.getBoundingClientRect();
         openMenu({ x: rect.left, y: rect.bottom });
