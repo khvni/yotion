@@ -52,48 +52,6 @@ export function BlockTypeMenu() {
   // Position menu at cursor
   const position = menuPosition || { x: 0, y: 0 };
 
-  // Handle keyboard navigation
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      switch (e.key) {
-        case "ArrowDown":
-          e.preventDefault();
-          setSelectedIndex((prev) => (prev + 1) % menuOptions.length);
-          break;
-        case "ArrowUp":
-          e.preventDefault();
-          setSelectedIndex((prev) => (prev - 1 + menuOptions.length) % menuOptions.length);
-          break;
-        case "Enter":
-          e.preventDefault();
-          handleSelectOption(menuOptions[selectedIndex].type);
-          break;
-        case "Escape":
-          e.preventDefault();
-          closeMenu();
-          break;
-      }
-    },
-    [selectedIndex, closeMenu, handleSelectOption]
-  );
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        closeMenu();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [closeMenu]);
-
   const handleSelectOption = useCallback(
     async (type: BlockType) => {
       if (!selectedBlockId) {
@@ -152,6 +110,48 @@ export function BlockTypeMenu() {
     },
     [selectedBlockId, blocks, updateBlock, closeMenu]
   );
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedIndex((prev) => (prev + 1) % menuOptions.length);
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedIndex((prev) => (prev - 1 + menuOptions.length) % menuOptions.length);
+          break;
+        case "Enter":
+          e.preventDefault();
+          handleSelectOption(menuOptions[selectedIndex].type);
+          break;
+        case "Escape":
+          e.preventDefault();
+          closeMenu();
+          break;
+      }
+    },
+    [selectedIndex, closeMenu, handleSelectOption]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        closeMenu();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [closeMenu]);
 
   return (
     <div

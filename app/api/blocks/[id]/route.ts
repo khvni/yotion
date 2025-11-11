@@ -8,14 +8,10 @@ export const runtime = "nodejs";
  * GET /api/blocks/:id
  * Fetch a single block by ID
  */
-<<<<<<< HEAD
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-=======
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
->>>>>>> quality-tree
   try {
     const { id } = await params;
 
@@ -38,14 +34,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
  * PATCH /api/blocks/:id
  * Update a block (content, type, order, metadata)
  */
-<<<<<<< HEAD
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-=======
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
->>>>>>> quality-tree
   try {
     const { id } = await params;
     const body = await request.json();
@@ -85,14 +77,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
  * DELETE /api/blocks/:id
  * Delete a block by ID
  */
-<<<<<<< HEAD
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-=======
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
->>>>>>> quality-tree
   try {
     const { id } = await params;
 

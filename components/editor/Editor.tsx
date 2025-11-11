@@ -5,11 +5,39 @@ import { useEditorStore } from "@/lib/store";
 import { Block as BlockComponent } from "./Block";
 import { BlockTypeMenu } from "./BlockTypeMenu";
 import { v4 as uuidv4 } from "uuid";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 export function Editor() {
   const { blocks, isMenuOpen, addBlock, setBlocks, undo, redo } = useEditorStore();
   const editorRef = useRef<HTMLDivElement>(null);
   const lastFocusedBlockRef = useRef<string | null>(null);
+
+  // Setup sensors for drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px movement before activating drag
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Load blocks on mount
   useEffect(() => {
@@ -46,6 +74,51 @@ export function Editor() {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
+
+  // Handle drag end
+  const handleDragEnd = useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      if (!over || active.id === over.id) return;
+
+      const oldIndex = blocks.findIndex((block) => block.id === active.id);
+      const newIndex = blocks.findIndex((block) => block.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      // Reorder blocks array
+      const reorderedBlocks = arrayMove(blocks, oldIndex, newIndex);
+
+      // Update order property for all blocks
+      const updatedBlocks = reorderedBlocks.map((block, index) => ({
+        ...block,
+        order: index,
+      }));
+
+      // Optimistic update
+      setBlocks(updatedBlocks);
+
+      // Batch update block orders in the database
+      try {
+        await fetch("/api/blocks/reorder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            blocks: updatedBlocks.map((block) => ({
+              id: block.id,
+              order: block.order,
+            })),
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to reorder blocks:", error);
+        // Revert on error
+        setBlocks(blocks);
+      }
+    },
+    [blocks, setBlocks]
+  );
 
   // Create new block
   const createNewBlock = useCallback(
@@ -122,15 +195,29 @@ export function Editor() {
     }
   }, [blocks]);
 
+  const sortedBlocks = [...(blocks || [])].sort((a, b) => a.order - b.order);
+  const blockIds = sortedBlocks.map((block) => block.id);
+
   return (
     <div ref={editorRef} className="editor-container max-w-4xl mx-auto py-8 px-4">
-      <div className="space-y-1">
-        {(blocks || [])
-          .sort((a, b) => a.order - b.order)
-          .map((block) => (
-            <BlockComponent key={block.id} block={block} onEnter={() => createNewBlock(block.id)} />
-          ))}
-      </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]}
+      >
+        <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
+          <div className="space-y-1">
+            {sortedBlocks.map((block) => (
+              <BlockComponent
+                key={block.id}
+                block={block}
+                onEnter={() => createNewBlock(block.id)}
+              />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
 
       {isMenuOpen && <BlockTypeMenu />}
     </div>
