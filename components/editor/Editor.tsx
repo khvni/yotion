@@ -149,6 +149,9 @@ export function Editor() {
       // Optimistic update
       setBlocks([...updatedBlocks, newBlock].sort((a, b) => a.order - b.order));
 
+      // Set focus target immediately for the optimistic block
+      lastFocusedBlockRef.current = newBlock.id;
+
       // Save to API
       try {
         const response = await fetch("/api/blocks", {
@@ -170,6 +173,7 @@ export function Editor() {
               (a, b) => a.order - b.order
             )
           );
+          // Update focus target to the saved block ID
           lastFocusedBlockRef.current = savedBlock.id;
         }
       } catch (error) {
