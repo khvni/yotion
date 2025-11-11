@@ -21,7 +21,7 @@ async function initializeDatabase() {
     {
       id: crypto.randomUUID(),
       type: "paragraph",
-      content: "This is a simple Notion-like block editor. Press / to see block types.",
+      content: "This is a simple Notion-like block editor. Try the keyboard shortcuts below or press / to see all block types.",
       order: 1,
       metadata: {},
       createdAt: new Date(),
@@ -30,7 +30,7 @@ async function initializeDatabase() {
     {
       id: crypto.randomUUID(),
       type: "paragraph",
-      content: "Try editing this text or adding new blocks!",
+      content: "Keyboard shortcuts: Ctrl+0 (Paragraph), Ctrl+1 (H1), Ctrl+2 (H2), Ctrl+3 (H3), Cmd+I (Image)",
       order: 2,
       metadata: {},
       createdAt: new Date(),

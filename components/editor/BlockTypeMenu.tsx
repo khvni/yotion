@@ -95,11 +95,15 @@ export function BlockTypeMenu() {
 
       // Save to API
       try {
-        await fetch(`/api/blocks/${selectedBlockId}`, {
+        const response = await fetch(`/api/blocks/${selectedBlockId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updates),
         });
+        // Consume the response body to ensure the request completes properly
+        if (response.ok) {
+          await response.json();
+        }
       } catch (error) {
         console.error("Failed to update block type:", error);
       }

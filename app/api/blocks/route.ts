@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     };
 
     const block = await createBlock(input);
-    return NextResponse.json({ block }, { status: 201 });
+    return NextResponse.json(block, { status: 201 });
   } catch (error) {
     console.error("Error creating block:", error);
     return NextResponse.json({ error: "Failed to create block" }, { status: 500 });

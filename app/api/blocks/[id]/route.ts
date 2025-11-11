@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: "Block not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ block }, { status: 200 });
+    return NextResponse.json(block, { status: 200 });
   } catch (error) {
     console.error("Error fetching block:", error);
     return NextResponse.json({ error: "Failed to fetch block" }, { status: 500 });
@@ -66,7 +66,7 @@ export async function PATCH(
     }
 
     const block = await updateBlock(id, input);
-    return NextResponse.json({ block }, { status: 200 });
+    return NextResponse.json(block, { status: 200 });
   } catch (error) {
     console.error("Error updating block:", error);
     return NextResponse.json({ error: "Failed to update block" }, { status: 500 });

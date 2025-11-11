@@ -10,7 +10,7 @@ interface TextBlockProps {
 }
 
 export function TextBlock({ block, onEnter }: TextBlockProps) {
-  const { updateBlock, deleteBlock, openMenu, closeMenu, blocks, setSelectedBlockId } = useEditorStore();
+  const { updateBlock, deleteBlock, openMenu, closeMenu, blocks, setSelectedBlockId, isMenuOpen } = useEditorStore();
   const contentRef = useRef<HTMLDivElement>(null);
   const lastContentRef = useRef<string>(block.content);
   const isInitialMount = useRef(true);
@@ -18,19 +18,22 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
   // Initialize content on mount and sync when needed
   useEffect(() => {
     if (contentRef.current) {
-      // On initial mount or type change, set the content
-      if (isInitialMount.current || contentRef.current.textContent === "") {
+      const domContent = contentRef.current.textContent || "";
+      const isFocused = document.activeElement === contentRef.current;
+
+      // On initial mount, set the content
+      if (isInitialMount.current) {
         contentRef.current.textContent = block.content;
         isInitialMount.current = false;
-      } else if (contentRef.current.textContent !== block.content) {
+      } else if (domContent !== block.content) {
         // Only update if element is not focused (external update)
-        if (document.activeElement !== contentRef.current) {
+        if (!isFocused) {
           contentRef.current.textContent = block.content;
         }
       }
     }
     lastContentRef.current = block.content;
-  }, [block.content, block.type]);
+  }, [block.content, block.type, block.id]);
 
   // Get Tailwind classes based on block type
   const getClassNames = (): string => {
@@ -127,6 +130,9 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
           const errorData = await response.json();
           throw new Error(errorData.error || "Failed to update block type");
         }
+
+        // Consume the response body to ensure the request completes properly
+        await response.json();
       } catch (error) {
         console.error("Failed to update block type:", error);
         // Revert the optimistic update
@@ -155,7 +161,7 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
       const cursorAtStart =
         selection && selection.anchorOffset === 0 && selection.focusOffset === 0;
 
-      // Keyboard shortcuts for block types (Ctrl+0-3)
+      // Keyboard shortcuts for block types (Ctrl+0-3, Cmd+I for image)
       if (e.ctrlKey || e.metaKey) {
         switch (e.key) {
           case "0":
@@ -173,6 +179,11 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
           case "3":
             e.preventDefault();
             handleBlockTypeChange("h3");
+            return;
+          case "i":
+          case "I":
+            e.preventDefault();
+            handleBlockTypeChange("image");
             return;
         }
       }
@@ -193,10 +204,9 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
         return;
       }
 
-      // Handle Enter key
-      if (e.key === "Enter") {
+      // Handle Enter key - but not if menu is open (let menu handle it)
+      if (e.key === "Enter" && !isMenuOpen) {
         e.preventDefault();
-        closeMenu();
         onEnter();
         return;
       }

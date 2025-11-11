@@ -131,11 +131,6 @@ export function Editor() {
 
       const newOrder = afterBlock.order + 1;
 
-      // Update orders of blocks after this one
-      const updatedBlocks = blocks.map((block) =>
-        block.order >= newOrder ? { ...block, order: block.order + 1 } : block
-      );
-
       const newBlock = {
         id: uuidv4(),
         type,
@@ -147,7 +142,13 @@ export function Editor() {
       };
 
       // Optimistic update
-      setBlocks([...updatedBlocks, newBlock].sort((a, b) => a.order - b.order));
+      setBlocks((currentBlocks) => {
+        // Re-calculate updated blocks with current state
+        const updated = currentBlocks.map((block) =>
+          block.order >= newOrder ? { ...block, order: block.order + 1 } : block
+        );
+        return [...updated, newBlock].sort((a, b) => a.order - b.order);
+      });
 
       // Set focus target immediately for the optimistic block
       lastFocusedBlockRef.current = newBlock.id;
@@ -168,11 +169,11 @@ export function Editor() {
         if (response.ok) {
           const savedBlock = await response.json();
           // Update with server-generated ID and timestamps
-          setBlocks(
-            [...updatedBlocks.filter((b) => b.id !== newBlock.id), savedBlock].sort(
-              (a, b) => a.order - b.order
-            )
-          );
+          // Use functional form to get current state (avoid stale closure)
+          setBlocks((currentBlocks) => {
+            const filtered = currentBlocks.filter((b) => b.id !== newBlock.id);
+            return [...filtered, savedBlock].sort((a, b) => a.order - b.order);
+          });
           // Update focus target to the saved block ID
           lastFocusedBlockRef.current = savedBlock.id;
         }

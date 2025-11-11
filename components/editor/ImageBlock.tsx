@@ -5,13 +5,14 @@ import { useDropzone } from "react-dropzone";
 import { Rnd } from "react-rnd";
 import { Block } from "@/lib/types";
 import { useEditorStore } from "@/lib/store";
+import heic2any from "heic2any";
 
 interface ImageBlockProps {
   block: Block;
 }
 
 export function ImageBlock({ block }: ImageBlockProps) {
-  const { updateBlock } = useEditorStore();
+  const { updateBlock, deleteBlock } = useEditorStore();
   const [isResizing, setIsResizing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -26,6 +27,36 @@ export function ImageBlock({ block }: ImageBlockProps) {
       setIsUploading(true);
 
       try {
+        let fileToProcess = file;
+
+        // Check if the file is HEIC/HEIF format
+        const isHEIC = file.type === "image/heic" ||
+                       file.type === "image/heif" ||
+                       file.name.toLowerCase().endsWith(".heic") ||
+                       file.name.toLowerCase().endsWith(".heif");
+
+        if (isHEIC) {
+          try {
+            // Convert HEIC to JPEG
+            const convertedBlob = await heic2any({
+              blob: file,
+              toType: "image/jpeg",
+              quality: 0.9,
+            });
+
+            // heic2any can return an array of blobs, so handle both cases
+            const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+            fileToProcess = new File([blob], file.name.replace(/\.heic$/i, ".jpg"), {
+              type: "image/jpeg",
+            });
+          } catch (conversionError) {
+            console.error("Failed to convert HEIC:", conversionError);
+            alert("Failed to convert HEIC image. Please try a JPG or PNG file.");
+            setIsUploading(false);
+            return;
+          }
+        }
+
         // Convert file to base64 data URL
         const reader = new FileReader();
         reader.onloadend = async () => {
@@ -36,11 +67,15 @@ export function ImageBlock({ block }: ImageBlockProps) {
 
           // Save to API
           try {
-            await fetch(`/api/blocks/${block.id}`, {
+            const response = await fetch(`/api/blocks/${block.id}`, {
               method: "PATCH",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ content: dataUrl }),
             });
+            // Consume the response body to ensure the request completes properly
+            if (response.ok) {
+              await response.json();
+            }
           } catch (error) {
             console.error("Failed to save image:", error);
           }
@@ -51,7 +86,7 @@ export function ImageBlock({ block }: ImageBlockProps) {
           alert("Failed to read file");
           setIsUploading(false);
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(fileToProcess);
       } catch (error) {
         console.error("Failed to upload image:", error);
         alert("Failed to upload image");
@@ -64,7 +99,7 @@ export function ImageBlock({ block }: ImageBlockProps) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"],
+      "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".heic", ".heif"],
     },
     multiple: false,
     noClick: !!block.content, // Disable click when image is already loaded
@@ -94,7 +129,7 @@ export function ImageBlock({ block }: ImageBlockProps) {
 
       // Save to API
       try {
-        await fetch(`/api/blocks/${block.id}`, {
+        const response = await fetch(`/api/blocks/${block.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -105,6 +140,10 @@ export function ImageBlock({ block }: ImageBlockProps) {
             },
           }),
         });
+        // Consume the response body to ensure the request completes properly
+        if (response.ok) {
+          await response.json();
+        }
       } catch (error) {
         console.error("Failed to save image dimensions:", error);
       }
@@ -128,6 +167,7 @@ export function ImageBlock({ block }: ImageBlockProps) {
         disableDragging
         onResizeStart={handleResizeStart}
         onResizeStop={handleResizeStop}
+        style={{ position: "relative" }}
         className={`border-2 ${
           isResizing ? "border-blue-500" : isDragActive ? "border-blue-400" : "border-gray-300"
         } rounded-lg overflow-hidden`}
@@ -174,7 +214,7 @@ export function ImageBlock({ block }: ImageBlockProps) {
                     ? "Drop image here"
                     : "Click to upload or drag and drop"}
                 </p>
-                <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF, WebP, SVG</p>
+                <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF, WebP, SVG, HEIC</p>
               </div>
             </div>
           )}
@@ -199,13 +239,32 @@ export function ImageBlock({ block }: ImageBlockProps) {
 
             // Debounce API call
             try {
-              await fetch(`/api/blocks/${block.id}`, {
+              const response = await fetch(`/api/blocks/${block.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ content: newUrl }),
               });
+              // Consume the response body to ensure the request completes properly
+              if (response.ok) {
+                await response.json();
+              }
             } catch (error) {
               console.error("Failed to save image URL:", error);
+            }
+          }}
+          onKeyDown={async (e) => {
+            if (e.key === "Backspace" && !block.content) {
+              e.preventDefault();
+              // Delete block from store
+              deleteBlock(block.id);
+              // Delete from API
+              try {
+                await fetch(`/api/blocks/${block.id}`, {
+                  method: "DELETE",
+                });
+              } catch (error) {
+                console.error("Failed to delete block:", error);
+              }
             }
           }}
           placeholder="Or enter image URL..."
@@ -216,11 +275,15 @@ export function ImageBlock({ block }: ImageBlockProps) {
             onClick={async () => {
               updateBlock(block.id, { content: "" });
               try {
-                await fetch(`/api/blocks/${block.id}`, {
+                const response = await fetch(`/api/blocks/${block.id}`, {
                   method: "PATCH",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ content: "" }),
                 });
+                // Consume the response body to ensure the request completes properly
+                if (response.ok) {
+                  await response.json();
+                }
               } catch (error) {
                 console.error("Failed to clear image:", error);
               }

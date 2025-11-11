@@ -15,7 +15,7 @@ interface EditorState {
 }
 
 interface EditorActions {
-  setBlocks: (blocks: Block[]) => void;
+  setBlocks: (blocks: Block[] | ((prevBlocks: Block[]) => Block[])) => void;
   addBlock: (block: Block) => void;
   updateBlock: (id: string, updates: Partial<Block>) => void;
   deleteBlock: (id: string) => void;
@@ -49,7 +49,10 @@ export const useEditorStore = create<EditorStore>()((set, get) => ({
   },
 
   // Actions
-  setBlocks: (blocks) => set({ blocks }),
+  setBlocks: (blocks) =>
+    set((state) => ({
+      blocks: typeof blocks === "function" ? blocks(state.blocks) : blocks,
+    })),
 
   addBlock: (block) =>
     set((state) => ({
