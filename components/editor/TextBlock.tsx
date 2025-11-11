@@ -13,14 +13,24 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
   const { updateBlock, deleteBlock, openMenu, closeMenu, blocks, setSelectedBlockId } = useEditorStore();
   const contentRef = useRef<HTMLDivElement>(null);
   const lastContentRef = useRef<string>(block.content);
+  const isInitialMount = useRef(true);
 
-  // Update content ref when block changes
+  // Initialize content on mount and sync when needed
   useEffect(() => {
-    if (contentRef.current && contentRef.current.textContent !== block.content) {
-      contentRef.current.textContent = block.content;
+    if (contentRef.current) {
+      // On initial mount or type change, set the content
+      if (isInitialMount.current || contentRef.current.textContent === "") {
+        contentRef.current.textContent = block.content;
+        isInitialMount.current = false;
+      } else if (contentRef.current.textContent !== block.content) {
+        // Only update if element is not focused (external update)
+        if (document.activeElement !== contentRef.current) {
+          contentRef.current.textContent = block.content;
+        }
+      }
     }
     lastContentRef.current = block.content;
-  }, [block.content]);
+  }, [block.content, block.type]);
 
   // Get Tailwind classes based on block type
   const getClassNames = (): string => {
@@ -241,7 +251,6 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
     onKeyDown: handleKeyDown,
     onInput: handleInput,
     onBlur: handleBlur,
-    children: block.content,
   };
 
   // Render appropriate tag based on block type

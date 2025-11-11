@@ -65,16 +65,19 @@ export function BlockTypeMenu() {
         return;
       }
 
-      // Clear the "/" character
+      // Get current content from the DOM element
       const blockElement = document.querySelector(
         `[data-block-id="${selectedBlockId}"] [contenteditable]`
       ) as HTMLElement;
-      if (blockElement) {
-        blockElement.textContent = "";
-      }
+      const currentContent = blockElement?.textContent || block.content;
 
-      // Update block type
-      const updates: Partial<typeof block> = { type };
+      // Remove the "/" character if present at the end
+      const contentWithoutSlash = currentContent.endsWith("/")
+        ? currentContent.slice(0, -1)
+        : currentContent;
+
+      // Update block type with preserved content
+      const updates: Partial<typeof block> = { type, content: contentWithoutSlash };
 
       // Add default metadata for image blocks
       if (type === "image") {
