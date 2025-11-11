@@ -10,7 +10,7 @@ interface TextBlockProps {
 }
 
 export function TextBlock({ block, onEnter }: TextBlockProps) {
-  const { updateBlock, deleteBlock, openMenu, closeMenu, blocks } = useEditorStore();
+  const { updateBlock, deleteBlock, openMenu, closeMenu, blocks, setSelectedBlockId } = useEditorStore();
   const contentRef = useRef<HTMLDivElement>(null);
   const lastContentRef = useRef<string>(block.content);
 
@@ -88,6 +88,55 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
     }
   }, [block.id, blocks, deleteBlock]);
 
+  // Handle block type conversion via keyboard shortcuts
+  const handleBlockTypeChange = useCallback(
+    async (newType: BlockType) => {
+      if (block.type === newType) return;
+
+      const currentContent = contentRef.current?.textContent || block.content;
+      const updates: Partial<Block> = { type: newType, content: currentContent };
+
+      // Add default metadata for image blocks
+      if (newType === "image") {
+        updates.metadata = { width: 400, height: 300 };
+        updates.content = "";
+      }
+
+      // Update store optimistically
+      updateBlock(block.id, updates);
+
+      // Save to API
+      try {
+        const response = await fetch(`/api/blocks/${block.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to update block type");
+        }
+      } catch (error) {
+        console.error("Failed to update block type:", error);
+        // Revert the optimistic update
+        updateBlock(block.id, { type: block.type, content: block.content });
+        alert(`Error: ${error instanceof Error ? error.message : "Failed to update block type"}. Please try again.`);
+      }
+
+      // Refocus the block
+      setTimeout(() => {
+        if (newType !== "image") {
+          const element = document.querySelector(
+            `[data-block-id="${block.id}"] [contenteditable]`
+          ) as HTMLElement;
+          element?.focus();
+        }
+      }, 0);
+    },
+    [block.id, block.type, block.content, updateBlock]
+  );
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
       const target = e.currentTarget;
@@ -96,9 +145,33 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
       const cursorAtStart =
         selection && selection.anchorOffset === 0 && selection.focusOffset === 0;
 
-      // Detect "/" at start of empty line to open menu
-      if (e.key === "/" && content === "") {
+      // Keyboard shortcuts for block types (Ctrl+0-3)
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case "0":
+            e.preventDefault();
+            handleBlockTypeChange("paragraph");
+            return;
+          case "1":
+            e.preventDefault();
+            handleBlockTypeChange("h1");
+            return;
+          case "2":
+            e.preventDefault();
+            handleBlockTypeChange("h2");
+            return;
+          case "3":
+            e.preventDefault();
+            handleBlockTypeChange("h3");
+            return;
+        }
+      }
+
+      // Detect "/" to open menu
+      if (e.key === "/") {
         e.preventDefault();
+        // Set selected block ID before opening menu
+        setSelectedBlockId(block.id);
         const rect = target.getBoundingClientRect();
         openMenu({ x: rect.left, y: rect.bottom });
         return;
@@ -128,7 +201,7 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
         return;
       }
     },
-    [openMenu, closeMenu, onEnter, blocks.length, handleDelete]
+    [openMenu, closeMenu, onEnter, blocks.length, handleDelete, handleBlockTypeChange, setSelectedBlockId, block.id]
   );
 
   const handleInput = useCallback(() => {
