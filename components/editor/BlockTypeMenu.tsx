@@ -9,6 +9,7 @@ interface MenuOption {
   label: string;
   icon: string;
   description: string;
+  shortcut?: string;
 }
 
 const menuOptions: MenuOption[] = [
@@ -17,24 +18,28 @@ const menuOptions: MenuOption[] = [
     label: "Paragraph",
     icon: "¶",
     description: "Plain text",
+    shortcut: "Ctrl+0",
   },
   {
     type: "h1",
     label: "Heading 1",
     icon: "H1",
     description: "Large section heading",
+    shortcut: "Ctrl+1",
   },
   {
     type: "h2",
     label: "Heading 2",
     icon: "H2",
     description: "Medium section heading",
+    shortcut: "Ctrl+2",
   },
   {
     type: "h3",
     label: "Heading 3",
     icon: "H3",
     description: "Small section heading",
+    shortcut: "Ctrl+3",
   },
   {
     type: "image",
@@ -176,10 +181,13 @@ export function BlockTypeMenu() {
           onMouseEnter={() => setSelectedIndex(index)}
         >
           <span className="text-lg leading-none mt-0.5 flex-shrink-0">{option.icon}</span>
-          <div className="flex flex-col items-start text-left">
+          <div className="flex flex-col items-start text-left flex-1">
             <div className="text-sm font-medium text-gray-900">{option.label}</div>
             <div className="text-xs text-gray-500">{option.description}</div>
           </div>
+          {option.shortcut && (
+            <div className="text-xs text-gray-400 ml-auto self-center">{option.shortcut}</div>
+          )}
         </button>
       ))}
     </div>
