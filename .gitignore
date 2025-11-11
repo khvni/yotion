@@ -34,3 +34,16 @@ next-env.d.ts
 
 # pglite data
 /pglite-data
+
+# takehome assignment files
+PRD.md
+PROMPT.md
+TAKEHOME.md
+
+# playwright test artifacts
+/test-results/
+/playwright-report/
+/.playwright-mcp/
+
+# development directories
+/YOUR PATH/
