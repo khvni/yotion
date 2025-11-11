@@ -1,19 +1,38 @@
 # Simple Notion Block Editor
 
-A minimal but functional block-based editor inspired by Notion, built with Next.js, TypeScript, and PGlite.
+A block-based editor inspired by Notion that implements all core deliverables plus extended features. Built with Next.js, TypeScript, and PGlite (embedded PostgreSQL).
+
+## Implementation Overview
+
+This project fulfills all TAKEHOME.md requirements:
+
+**Core Deliverables:**
+- Loads and displays text and image blocks from backend datastore
+- Creates new text blocks (paragraph, H1, H2, H3) and image blocks with persistence
+- Edits existing blocks with real-time updates to PGlite database
+- Custom text block types and image dimensions (height, width, source)
+- Full-stack implementation with custom API routes (no backend-as-a-service)
+
+**Extended Features:**
+- Drag-and-drop block reordering with dnd-kit
+- Image upload from local storage with HEIC conversion support
+- Undo/redo functionality with full history tracking
+- Rich keyboard shortcuts (Cmd+0-3 for headings, Cmd+I for images)
 
 ## Features
 
-✅ **Block-Based Architecture** - Each piece of content is an independent block
-✅ **Multiple Text Types** - Paragraph, Heading 1, 2, and 3
-✅ **Image Blocks** - With resizable dimensions using react-rnd
-✅ **Slash Commands** - Type `/` to open block type menu
-✅ **Keyboard Shortcuts** - Enter for new block, Backspace to delete, Cmd+Z/Cmd+Shift+Z for undo/redo
-✅ **Data Persistence** - All changes saved to embedded PGlite database
-✅ **Undo/Redo** - Full history tracking with Zustand
-✅ **ContentEditable** - Native browser contenteditable (no rich text libraries)
-✅ **Auto-Save** - Content saved automatically on blur
-✅ **TypeScript** - Fully typed with strict mode
+- **Block-Based Architecture** - Each piece of content is an independent block
+- **Multiple Text Types** - Paragraph, Heading 1, 2, and 3
+- **Image Blocks** - Resizable with react-rnd, supports URL input and file upload
+- **Drag & Drop Reordering** - Reorder blocks via dnd-kit
+- **Slash Commands** - Type `/` to open block type menu
+- **Keyboard Shortcuts** - Block type conversion, navigation, undo/redo
+- **Data Persistence** - All changes saved to embedded PGlite database
+- **Undo/Redo** - Full history tracking with Zustand
+- **Image Upload** - Direct upload from local storage with HEIC/HEIF support
+- **ContentEditable** - Native browser contenteditable without rich text libraries
+- **Auto-Save** - Content saved automatically on blur
+- **TypeScript** - Fully typed with strict mode
 
 ## Tech Stack
 
@@ -21,7 +40,8 @@ A minimal but functional block-based editor inspired by Notion, built with Next.
 - **State Management**: Zustand with custom undo/redo
 - **Database**: PGlite (embedded PostgreSQL)
 - **Styling**: Tailwind CSS
-- **Image Resizing**: react-rnd
+- **Drag & Drop**: dnd-kit
+- **Image Handling**: react-rnd, react-dropzone, heic2any
 - **Testing**: Playwright
 - **Code Quality**: ESLint, Prettier
 
@@ -56,36 +76,48 @@ npm start
 
 ### Creating Blocks
 
-- **New Block**: Press `Enter` at the end of any block
-- **Slash Menu**: Type `/` to open the block type selector
-- **Text Editing**: Click any text block to edit inline
-- **Image Blocks**: Select "Image" from slash menu, enter URL
+- Press `Enter` at the end of any block to create a new paragraph
+- Type `/` to open the block type selector
+- Click any text block to edit inline
+- Select "Image" from slash menu and enter a URL to add images
 
 ### Keyboard Shortcuts
 
-- `Enter` - Create new paragraph block below current block
-- `Backspace` - Delete empty block (and focus previous)
-- `/` - Open block type menu
-- `↑` / `↓` - Navigate menu options (when menu open)
-- `Enter` - Select menu option
-- `Escape` - Close menu
-- `Cmd+Z` - Undo last change
-- `Cmd+Shift+Z` - Redo
+| Key | Action |
+|-----|--------|
+| `Enter` | Create new paragraph below |
+| `Backspace` | Delete empty block and focus previous |
+| `/` | Open block type menu |
+| `↑` / `↓` | Navigate menu options |
+| `Escape` | Close menu |
+| `Cmd+0` | Convert to paragraph |
+| `Cmd+1` | Convert to Heading 1 |
+| `Cmd+2` | Convert to Heading 2 |
+| `Cmd+3` | Convert to Heading 3 |
+| `Cmd+I` | Convert to image block |
+| `Cmd+Z` | Undo |
+| `Cmd+Shift+Z` | Redo |
 
 ### Block Types
 
-1. **Paragraph** - Default text block
-2. **Heading 1** - Large heading (text-4xl)
-3. **Heading 2** - Medium heading (text-3xl)
-4. **Heading 3** - Small heading (text-2xl)
-5. **Image** - Resizable image with URL input
+| Type | Description |
+|------|-------------|
+| Paragraph | Default text block |
+| Heading 1 | Large heading |
+| Heading 2 | Medium heading |
+| Heading 3 | Small heading |
+| Image | Resizable image from URL |
 
 ### Image Blocks
 
-- Resize by dragging corners
-- Edit URL in the input field
-- Default dimensions: 400×300px
-- Constraints: 100-800px width/height
+Images support multiple input methods:
+- **Drag and drop** images directly onto the block
+- **Click to upload** from local storage
+- **Enter URL** in the input field below the image
+
+Supported formats: PNG, JPG, GIF, WebP, SVG, HEIC/HEIF (auto-converted to JPEG)
+
+Images can be resized by dragging corners. Default size is 400×300px with constraints between 100-800px for both width and height.
 
 ## Project Structure
 
@@ -116,11 +148,14 @@ npm start
 
 ## API Endpoints
 
-### GET /api/blocks
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/blocks` | Fetch all blocks ordered by position |
+| POST | `/api/blocks` | Create a new block |
+| PATCH | `/api/blocks/:id` | Update an existing block |
+| DELETE | `/api/blocks/:id` | Delete a block |
 
-Fetch all blocks ordered by position
-
-**Response:**
+### Example Response (GET /api/blocks)
 
 ```json
 {
@@ -135,46 +170,6 @@ Fetch all blocks ordered by position
       "updatedAt": "2025-01-01T00:00:00Z"
     }
   ]
-}
-```
-
-### POST /api/blocks
-
-Create a new block
-
-**Request:**
-
-```json
-{
-  "type": "paragraph",
-  "content": "New block",
-  "order": 5,
-  "metadata": {}
-}
-```
-
-### PATCH /api/blocks/:id
-
-Update an existing block
-
-**Request:**
-
-```json
-{
-  "content": "Updated content",
-  "metadata": { "width": 500 }
-}
-```
-
-### DELETE /api/blocks/:id
-
-Delete a block
-
-**Response:**
-
-```json
-{
-  "success": true
 }
 ```
 
@@ -208,9 +203,7 @@ npm run format
 
 ### Database
 
-The embedded PGlite database is stored in `./pglite-data/`.
-
-**Schema:**
+PGlite embedded database stored in `./pglite-data/` with the following schema:
 
 ```sql
 CREATE TABLE blocks (
@@ -226,63 +219,38 @@ CREATE TABLE blocks (
 
 ## Architecture
 
-### Block-Based Design
+### Block Structure
 
-Each block is an independent unit with:
-
-- Unique ID
-- Type (paragraph, h1, h2, h3, image)
-- Content (text or image URL)
-- Order (position in document)
-- Metadata (type-specific properties)
+Each block contains:
+- **id**: Unique identifier
+- **type**: Block type (paragraph, h1, h2, h3, image)
+- **content**: Text content or image URL
+- **order**: Position in document
+- **metadata**: Type-specific properties (e.g., image dimensions)
 
 ### State Management
 
-Zustand store manages:
-
-- Blocks array (current state)
-- History (past/future states for undo/redo)
-- Selected block ID
-- Slash menu state
+Zustand store handles:
+- Block array with current state
+- History for undo/redo functionality
+- Selected block tracking
+- Slash menu visibility
 
 ### Data Flow
 
+User interactions trigger optimistic updates in the Zustand store, then persist to PGlite via API routes:
+
 ```
-User Action → Component → Zustand Store → API Call → PGlite
-                               ↓
-                        Optimistic Update
+User Action → Component → Store (optimistic) → API → PGlite
 ```
 
 ## Known Limitations
 
-- No drag-and-drop reordering
-- No rich text formatting (bold, italic, etc.)
-- Images must be URLs (no upload)
+- No rich text formatting within blocks (bold, italic, links)
 - Single document only
 - No collaborative editing
 - No export functionality
 
-## Future Enhancements
-
-- Block drag-and-drop reordering
-- Rich text formatting toolbar
-- Image upload with storage
-- Multiple documents
-- Search functionality
-- Export to Markdown/HTML
-- Real-time collaboration
-- Dark mode
-
 ## License
 
 MIT
-
-## Acknowledgments
-
-Built as a take-home exercise demonstrating:
-
-- ContentEditable mastery
-- Full-stack TypeScript
-- Block-based editor architecture
-- State management with undo/redo
-- E2E testing with Playwright
