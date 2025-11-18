@@ -252,7 +252,7 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
       } catch (error) {
         console.error("Failed to auto-save block:", error);
       }
-    }, 200); // Save 200ms after user stops typing
+    }, 100); // Save 100ms after user stops typing
   }, [block.id, updateBlock]);
 
   const handleBlur = useCallback(async () => {
