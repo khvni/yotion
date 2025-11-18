@@ -13,6 +13,7 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
   const { updateBlock, deleteBlock, openMenu, closeMenu, blocks, setSelectedBlockId, isMenuOpen } = useEditorStore();
   const contentRef = useRef<HTMLDivElement>(null);
   const lastContentRef = useRef<string>(block.content);
+  const lastSavedContentRef = useRef<string>(block.content);
   const isInitialMount = useRef(true);
 
   // Initialize content on mount and sync when needed
@@ -237,8 +238,8 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
     if (!contentRef.current) return;
     const content = contentRef.current.textContent || "";
 
-    // Only save if content changed
-    if (content === lastContentRef.current) return;
+    // Only save if content changed from last saved version
+    if (content === lastSavedContentRef.current) return;
 
     // Save to API
     try {
@@ -247,6 +248,7 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),
       });
+      lastSavedContentRef.current = content; // Update after successful save
     } catch (error) {
       console.error("Failed to save block:", error);
     }
