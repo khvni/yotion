@@ -25,11 +25,13 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
       // On initial mount, set the content
       if (isInitialMount.current) {
         contentRef.current.textContent = block.content;
+        lastSavedContentRef.current = block.content; // Initialize saved content ref
         isInitialMount.current = false;
       } else if (domContent !== block.content) {
         // Only update if element is not focused (external update)
         if (!isFocused) {
           contentRef.current.textContent = block.content;
+          lastSavedContentRef.current = block.content; // Update saved content ref on external updates
         }
       }
     }
