@@ -14,6 +14,7 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const lastContentRef = useRef<string>(block.content);
   const lastSavedContentRef = useRef<string>(block.content);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const isInitialMount = useRef(true);
 
   // Initialize content on mount and sync when needed
@@ -231,19 +232,43 @@ export function TextBlock({ block, onEnter }: TextBlockProps) {
     if (!contentRef.current) return;
     const newContent = contentRef.current.textContent || "";
 
-    // Update local state immediately
+    // Update store immediately for responsive UI
     updateBlock(block.id, { content: newContent });
     lastContentRef.current = newContent;
+
+    // Debounced auto-save to API
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(async () => {
+      // Skip if content hasn't changed from last saved version
+      if (newContent === lastSavedContentRef.current) return;
+
+      try {
+        await fetch(`/api/blocks/${block.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: newContent }),
+        });
+        lastSavedContentRef.current = newContent;
+      } catch (error) {
+        console.error("Failed to auto-save block:", error);
+      }
+    }, 1000); // Save 1 second after user stops typing
   }, [block.id, updateBlock]);
 
   const handleBlur = useCallback(async () => {
     if (!contentRef.current) return;
     const content = contentRef.current.textContent || "";
 
+    // Clear any pending auto-save timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = undefined;
+    }
+
     // Only save if content changed from last saved version
     if (content === lastSavedContentRef.current) return;
 
-    // Save to API
+    // Save to API immediately on blur
     try {
       await fetch(`/api/blocks/${block.id}`, {
         method: "PATCH",

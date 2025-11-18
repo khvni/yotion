@@ -75,6 +75,30 @@ export function Editor() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  // Save focused block before page unload as fallback
+  useEffect(() => {
+    const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
+      const activeElement = document.activeElement;
+
+      // Check if the active element is a contenteditable block
+      if (activeElement?.hasAttribute('contenteditable')) {
+        const blockElement = activeElement.closest('[data-block-id]');
+        const blockId = blockElement?.getAttribute('data-block-id');
+        const content = (activeElement as HTMLElement).textContent || '';
+
+        if (blockId && content) {
+          // Use sendBeacon for reliable save during page unload
+          const data = JSON.stringify({ content });
+          const blob = new Blob([data], { type: 'application/json' });
+          navigator.sendBeacon(`/api/blocks/${blockId}`, blob);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
   // Handle drag end
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
