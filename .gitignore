@@ -35,9 +35,6 @@ next-env.d.ts
 # pglite data
 /pglite-data
 
-# takehome assignment files
-TAKEHOME.md
-
 # playwright test artifacts
 /test-results/
 /playwright-report/

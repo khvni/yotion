@@ -1,23 +1,17 @@
-# Simple Notion Block Editor
+# Yotion
 
-A block-based editor inspired by Notion that implements all core deliverables plus extended features. Built with Next.js, TypeScript, and PGlite (embedded PostgreSQL).
+A lightweight Notion-inspired block editor built from scratch without any text editor libraries like Tiptap or Blocknote. This proof-of-concept demonstrates how to build a block-based editor using Next.js, TypeScript, and native contentEditable.
 
-## Implementation Overview
+## Overview
 
-This project fulfills all TAKEHOME.md requirements:
-
-**Core Deliverables:**
-- Loads and displays text and image blocks from backend datastore
-- Creates new text blocks (paragraph, H1, H2, H3) and image blocks with persistence
-- Edits existing blocks with real-time updates to PGlite database
-- Custom text block types and image dimensions (height, width, source)
-- Full-stack implementation with custom API routes (no backend-as-a-service)
-
-**Extended Features:**
-- Drag-and-drop block reordering with dnd-kit
-- Image upload from local storage with HEIC conversion support
-- Undo/redo functionality with full history tracking
-- Rich keyboard shortcuts (Cmd+0-3 for headings, Cmd+I for images)
+Yotion is a minimal block editor that implements core Notion-like features:
+- Block-based content architecture
+- Multiple text block types (paragraph, H1-H3)
+- Image blocks with flexible input methods
+- Drag-and-drop reordering
+- Undo/redo with full history tracking
+- Keyboard shortcuts for efficient editing
+- All built without relying on existing rich text editor libraries
 
 ## Features
 
@@ -140,10 +134,8 @@ Images can be resized by dragging corners. Default size is 400×300px with const
 │   ├── db.ts             # PGlite database
 │   ├── store.ts          # Zustand state
 │   └── types.ts          # TypeScript types
-├── tests/                 # Playwright tests
-│   └── editor.spec.ts    # E2E test suite
-├── PRD.md                 # Product Requirements Document
-└── TAKEHOME.md            # Original requirements
+└── tests/                 # Playwright tests
+    └── editor.spec.ts    # E2E test suite
 ```
 
 ## API Endpoints

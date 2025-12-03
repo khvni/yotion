@@ -1,6 +1,6 @@
 # Contributing
 
-This is a take-home project for demonstration purposes. Contributions are not currently being accepted.
+This is a proof-of-concept project for demonstration purposes. Contributions are welcome via pull requests.
 
 ## Development Setup
 
